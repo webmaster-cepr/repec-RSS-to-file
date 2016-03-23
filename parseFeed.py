@@ -1,9 +1,14 @@
 import feedparser
+from datetime import datetime
 import time
+import re
+import textwrap
 
 f = feedparser.parse('http://cepr.net/publications/reports/feed/rss')
 
-if f.updated >= time.strftime('%x'):
+feed_date = f.updated[:-13]
+
+if feed_date == time.strftime('%a, %d %b %Y'):
     # grab pubDate
     pubDate = str(f.entries[0].published_parsed.tm_year) + "-" + str(f.entries[0].published_parsed.tm_mon)
     # grab title
@@ -13,12 +18,21 @@ if f.updated >= time.strftime('%x'):
     # find names between parentheses
     m = re.search('\(([^)]+)\)', authors)
     # remove 'and'
-    authors_string = m.group(1).replace("and","")
+    authors_string = m.group(1).replace("and", "")
     # convert to list
-    authors.list = authors_string.split()
+    authors_list = authors_string.split(',')
+    # abstract
+    # NOTE THIS IS NOT PULLING THE ACTUAL DESCRIPTION - NEEDS WORK
+    abstract = f.entries[0].description
+
     # use length of list to loop and create individual author-name entries
+
+    # details
+    entry_head = textwrap.dedent("""\
+                Template-Type: ReDif-Paper 1.0
+                Handle: RePEc:epo:papers:"""+pubDate)
 
 # append details to file
 
-# with open("", "a") as myfile:
-#     myfile.write("appended text")
+with open(time.strftime("%Y") + "-test.rdf", "a") as repec_file:
+     repec_file.write(entry_head)
