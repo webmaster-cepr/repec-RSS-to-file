@@ -28,7 +28,7 @@ for x in f.entries:
         # remove 'and'
         authors_string = m.group(1).replace("and", ",")
         # convert to list
-        authors_list = authors_string.split(',')
+        authors_list = authors_string.split(', ')
         # abstract
         # NOTE THIS IS NOT PULLING THE ACTUAL DESCRIPTION - NEEDS WORK
         abstract = x.description
@@ -41,5 +41,9 @@ for x in f.entries:
         # append details to file
         with open(time.strftime("%Y") + "-test.rdf", "a") as repec_file:
             repec_file.write(entry_head)
+            repec_file.write("\nTitle: "+title)
             # need for loop here
-            repec_file.write("\nAuthor-Name:" + authors_list[0])
+            for a in authors_list:
+                repec_file.write("\nAuthor-Name: " + a)
+            repec_file.write("\nCreation-Date: " + pubDate)
+            repec_file.write("\nAbstract: " + abstract)
